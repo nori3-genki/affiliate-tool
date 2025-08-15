@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アフィリエイトリンク変換ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .service-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .service-section:hover {
+            border-color: #4f46e5;
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.1);
+        }
+
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .service-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+        }
+
+        .jalan { background-color: #ff6b35; }
+        .ikyu { background-color: #2563eb; }
+        .rakuten-travel { background-color: #bf0000; }
+        .rakuten-market { background-color: #c8102e; }
+        .amazon { background-color: #ff9900; }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .convert-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .copy-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .result-area {
+            margin-top: 20px;
+        }
+
+        .result-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            background-color: #f9fafb;
+        }
+
+        .result-textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .note {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #92400e;
+        }
+
+        .note strong {
+            color: #78350f;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #047857;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .service-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 アフィリエイトリンク変換ツール</h1>
+            <p>楽天トラベル・楽天市場・AmazonのURLをもしもアフィリエイトリンクに変換</p>
+        </div>
+
+        <div class="content">
+            <!-- 楽天トラベル -->
+            <div class="service-section">
+                <div class="service-title">
+                    <div class="service-icon rakuten-travel"></div>
+                    楽天トラベル
+                </div>
+                <div class="input-group">
+                    <label for="rakuten-travel-url">楽天トラベルのURL:</label>
+                    <input type="url" id="rakuten-travel-url" placeholder="https://travel.rakuten.co.jp/HOTEL/1656/1656.html">
+                </div>
+                <button class="convert-btn" onclick="convertRakutenTravel()">もしもアフィリエイトリンクに変換</button>
+                <button class="copy-btn" onclick="copyResult('rakuten-travel-result')">コピー</button>
+                <div class="result-area">
+                    <textarea id="rakuten-travel-result" class="result-textarea" placeholder="変換されたもしもアフィリエイトリンクがここに表示されます" readonly></textarea>
+                    <div id="rakuten-travel-success" class="success-message">コピーしました！</div>
+                </div>
+            </div>
+
+            <!-- 楽天市場 -->
+            <div class="service-section">
+                <div class="service-title">
+                    <div class="service-icon rakuten-market"></div>
+                    楽天市場
+                </div>
+                <div class="input-group">
+                    <label for="rakuten-market-url">楽天市場のURL:</label>
+                    <input type="url" id="rakuten-market-url" placeholder="https://item.rakuten.co.jp/shop/item-id/">
+                </div>
+                <button class="convert-btn" onclick="convertRakutenMarket()">もしもアフィリエイトリンクに変換</button>
+                <button class="copy-btn" onclick="copyResult('rakuten-market-result')">コピー</button>
+                <div class="result-area">
+                    <textarea id="rakuten-market-result" class="result-textarea" placeholder="変換されたもしもアフィリエイトリンクがここに表示されます" readonly></textarea>
+                    <div id="rakuten-market-success" class="success-message">コピーしました！</div>
+                </div>
+            </div>
+
+            <!-- Amazon -->
+            <div class="service-section">
+                <div class="service-title">
+                    <div class="service-icon amazon"></div>
+                    Amazon
+                </div>
+                <div class="input-group">
+                    <label for="amazon-url">AmazonのURL:</label>
+                    <input type="url" id="amazon-url" placeholder="https://www.amazon.co.jp/product/dp/XXXXXXXXXX/">
+                </div>
+                <button class="convert-btn" onclick="convertAmazon()">もしもアフィリエイトリンクに変換</button>
+                <button class="copy-btn" onclick="copyResult('amazon-result')">コピー</button>
+                <div class="result-area">
+                    <textarea id="amazon-result" class="result-textarea" placeholder="変換されたもしもアフィリエイトリンクがここに表示されます" readonly></textarea>
+                    <div id="amazon-success" class="success-message">コピーしました！</div>
+                </div>
+            </div>
+
+            <div class="note">
+                <strong>使用方法:</strong><br>
+                • 各サービスのURLを入力して「変換」ボタンをクリック<br>
+                • 自動的にもしもアフィリエイトリンクに変換されます<br>
+                • 「コピー」ボタンでクリップボードにコピーして使用してください<br>
+                • 楽天トラベル・楽天市場・Amazonに対応
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // もしもアフィリエイトの設定
+        const MOSHIMO_CONFIG = {
+            rakuten_travel: {
+                a_id: '334812',
+                p_id: '55',
+                pc_id: '55', 
+                pl_id: '624'
+            },
+            rakuten_market: {
+                a_id: '334859',
+                p_id: '54',
+                pc_id: '54',
+                pl_id: '616'
+            },
+            amazon: {
+                a_id: '334860',
+                p_id: '170',
+                pc_id: '185',
+                pl_id: '4062'
+            }
+        };
+
+        function convertRakutenTravel() {
+            const url = document.getElementById('rakuten-travel-url').value.trim();
+            const resultTextarea = document.getElementById('rakuten-travel-result');
+            
+            if (!url) {
+                alert('URLを入力してください');
+                return;
+            }
+            
+            if (!url.includes('travel.rakuten.co.jp')) {
+                alert('楽天トラベルのURLを入力してください');
+                return;
+            }
+            
+            const config = MOSHIMO_CONFIG.rakuten_travel;
+            const encodedUrl = encodeURIComponent(url);
+            
+            const affiliateLink = `<a href="//af.moshimo.com/af/c/click?a_id=${config.a_id}&p_id=${config.p_id}&pc_id=${config.pc_id}&pl_id=${config.pl_id}&url=${encodedUrl}" rel="nofollow" referrerpolicy="no-referrer-when-downgrade" attributionsrc>楽天トラベル</a><img src="//i.moshimo.com/af/i/impression?a_id=${config.a_id}&p_id=${config.p_id}&pc_id=${config.pc_id}&pl_id=${config.pl_id}" width="1" height="1" style="border:none;" alt="" loading="lazy">`;
+            
+            resultTextarea.value = affiliateLink;
+        }
+
+        function convertRakutenMarket() {
+            const url = document.getElementById('rakuten-market-url').value.trim();
+            const resultTextarea = document.getElementById('rakuten-market-result');
+            
+            if (!url) {
+                alert('URLを入力してください');
+                return;
+            }
+            
+            if (!url.includes('item.rakuten.co.jp')) {
+                alert('楽天市場のURLを入力してください');
+                return;
+            }
+            
+            const config = MOSHIMO_CONFIG.rakuten_market;
+            const encodedUrl = encodeURIComponent(url);
+            
+            const affiliateLink = `<a href="//af.moshimo.com/af/c/click?a_id=${config.a_id}&p_id=${config.p_id}&pc_id=${config.pc_id}&pl_id=${config.pl_id}&url=${encodedUrl}" rel="nofollow" referrerpolicy="no-referrer-when-downgrade" attributionsrc>楽天市場</a><img src="//i.moshimo.com/af/i/impression?a_id=${config.a_id}&p_id=${config.p_id}&pc_id=${config.pc_id}&pl_id=${config.pl_id}" width="1" height="1" style="border:none;" alt="" loading="lazy">`;
+            
+            resultTextarea.value = affiliateLink;
+        }
+
+        function convertAmazon() {
+            const url = document.getElementById('amazon-url').value.trim();
+            const resultTextarea = document.getElementById('amazon-result');
+            
+            if (!url) {
+                alert('URLを入力してください');
+                return;
+            }
+            
+            if (!url.includes('amazon.co.jp')) {
+                alert('AmazonのURLを入力してください');
+                return;
+            }
+            
+            const config = MOSHIMO_CONFIG.amazon;
+            const encodedUrl = encodeURIComponent(url);
+            
+            const affiliateLink = `<a href="//af.moshimo.com/af/c/click?a_id=${config.a_id}&p_id=${config.p_id}&pc_id=${config.pc_id}&pl_id=${config.pl_id}&url=${encodedUrl}" rel="nofollow" referrerpolicy="no-referrer-when-downgrade" attributionsrc>Amazon.co.jp</a><img src="//i.moshimo.com/af/i/impression?a_id=${config.a_id}&p_id=${config.p_id}&pc_id=${config.pc_id}&pl_id=${config.pl_id}" width="1" height="1" style="border:none;" alt="" loading="lazy">`;
+            
+            resultTextarea.value = affiliateLink;
+        }
+
+        function copyResult(resultId) {
+            const resultTextarea = document.getElementById(resultId);
+            const successMessage = document.getElementById(resultId.replace('result', 'success'));
+            
+            if (!resultTextarea.value.trim()) {
+                alert('変換されたリンクがありません');
+                return;
+            }
+            
+            // クリップボードにコピー
+            navigator.clipboard.writeText(resultTextarea.value).then(() => {
+                // 成功メッセージを表示
+                successMessage.classList.add('show');
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                // フォールバック: テキストエリアを選択してコピー
+                resultTextarea.select();
+                document.execCommand('copy');
+                successMessage.classList.add('show');
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        // エンターキーで変換実行
+        document.getElementById('rakuten-travel-url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') convertRakutenTravel();
+        });
+
+        document.getElementById('rakuten-market-url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') convertRakutenMarket();
+        });
+
+        document.getElementById('amazon-url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') convertAmazon();
+        });
+    </script>
+</body>
+</html>
